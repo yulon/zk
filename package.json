@@ -1,8 +1,8 @@
 {
 	"name": "zk",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"repo": "yulon/zk",
-	"description": "A micro C source libraries",
+	"description": "A single-file libraries",
 	"license": "MIT",
 	"src": [
 		"map.h",

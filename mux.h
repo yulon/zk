@@ -6,8 +6,8 @@
 #define _ZK_LINK_M(p, n) _ZK_LINK(p, n)
 #endif
 
-#ifdef ZK_NAMESCOPE
-#define _ZK_NAME(n) _ZK_LINK_M(ZK_NAMESCOPE, n)
+#ifdef ZK_SCOPE
+#define _ZK_NAME(n) _ZK_LINK_M(ZK_SCOPE, n)
 #else
 #define _ZK_NAME(n) _ZK_LINK(zk, n)
 #endif
@@ -34,9 +34,9 @@ void _ZK_NAME(ZKMux_free)(ZKMux);
 }
 #endif
 
-#ifdef ZK_IMPLEMENTATION
-#ifndef _ZK_MUTEX_BODY
-#define _ZK_MUTEX_BODY
+#ifdef ZK_IMPL
+#ifndef _ZK_MUX_BODY
+#define _ZK_MUX_BODY
 
 #include <stdlib.h>
 
@@ -91,7 +91,7 @@ void _ZK_NAME(ZKMux_free)(ZKMux mux) {
 	}
 }
 
-#endif // !_ZK_MUTEX_BODY
-#endif // !ZK_IMPLEMENTATION
+#endif // !_ZK_MUX_BODY
+#endif // !ZK_IMPL
 
 #endif // !_ZK_MUX_H

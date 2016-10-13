@@ -6,12 +6,13 @@
 #define _ZK_LINK_M(p, n) _ZK_LINK(p, n)
 #endif
 
-#ifdef ZK_NAMESCOPE
-#define _ZK_NAME(n) _ZK_LINK_M(ZK_NAMESCOPE, n)
+#ifdef ZK_SCOPE
+#define _ZK_NAME(n) _ZK_LINK_M(ZK_SCOPE, n)
 #else
 #define _ZK_NAME(n) _ZK_LINK(zk, n)
 #endif
 
+#include <stdint.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -42,13 +43,12 @@ void _ZK_NAME(ZKMap_free)(ZKMap);
 }
 #endif
 
-#ifdef ZK_IMPLEMENTATION
+#ifdef ZK_IMPL
 #ifndef _ZK_MAP_BODY
 #define _ZK_MAP_BODY
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 typedef struct Pair {
 	void *key;
@@ -138,6 +138,6 @@ void _ZK_NAME(ZKMap_free)(ZKMap map) {
 }
 
 #endif // !_ZK_MAP_BODY
-#endif // !ZK_IMPLEMENTATION
+#endif // !ZK_IMPL
 
 #endif // !_ZK_MAP_H
