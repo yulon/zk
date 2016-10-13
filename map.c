@@ -1,7 +1,6 @@
 #include "map.h"
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 typedef struct ZKPair {
 	void *key;

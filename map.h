@@ -1,6 +1,7 @@
 #ifndef _ZK_MAP_H
 #define _ZK_MAP_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus

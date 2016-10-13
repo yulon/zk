@@ -11,7 +11,7 @@
 
 ZKMux new_ZKMux(void) {
 	#if defined(_WIN32)
-		return (ZKMux)CreateZKMuxW(NULL, FALSE, NULL);
+		return (ZKMux)CreateMutexW(NULL, FALSE, NULL);
 	#elif defined(__unix__)
 		pthread_mutex_t *ptMux = calloc(1, sizeof(pthread_mutex_t));
 		pthread_mutex_init(ptMux, NULL);
@@ -34,7 +34,7 @@ void ZKMux_lock(ZKMux mux) {
 void ZKMux_unlock(ZKMux mux) {
 	if (mux) {
 		#if defined(_WIN32)
-			ReleaseZKMux((HANDLE)mux);
+			ReleaseMutex((HANDLE)mux);
 		#elif defined(__unix__)
 			pthread_mutex_unlock((pthread_mutex_t *)mux);
 		#endif
