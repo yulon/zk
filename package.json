@@ -1,0 +1,10 @@
+{
+	"name": "zk",
+	"version": "0.0.1",
+	"repo": "yulon/zk",
+	"description": "A micro C source libraries",
+	"license": "MIT",
+	"src": [
+		"*.h", "*.c"
+	]
+}
