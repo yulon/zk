@@ -1,7 +1,7 @@
 #ifndef _ZK_MUX_H
 #define _ZK_MUX_H
 
-typedef struct ZKMux *ZKMux;
+typedef struct zk_mux *zk_mux_t;
 
 #include <stdlib.h>
 
@@ -10,28 +10,28 @@ typedef struct ZKMux *ZKMux;
 #elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 	#include <pthread.h>
 #else
-	#pragma message("ZKMux: not support this OS!")
+	#pragma message("ZK.mux: not support this OS!")
 #endif
 
-static inline ZKMux new_ZKMux(void) {
+static inline zk_mux_t zk_new_mux(void) {
 	#if defined(_WIN32)
-		HANDLE ntvMux = CreateMutexW(NULL, FALSE, NULL);
-		if (!ntvMux) {
-			puts("ZK: Win32.CreateMutexW error!");
+		HANDLE ntv_mux = CreateMutexW(NULL, FALSE, NULL);
+		if (!ntv_mux) {
+			puts("ZK.mux: Win32.CreateMutexW error!");
 			exit(1);
 		}
 	#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-		pthread_mutex_t *ntvMux = calloc(1, sizeof(pthread_mutex_t));
-		pthread_mutex_init(ntvMux, NULL);
-		if (!ntvMux) {
-			puts("ZK: pthread_mutex_init error!");
+		pthread_mutex_t *ntv_mux = calloc(1, sizeof(pthread_mutex_t));
+		pthread_mutex_init(ntv_mux, NULL);
+		if (!ntv_mux) {
+			puts("ZK.mux: POSIX.pthread_mutex_init error!");
 			exit(1);
 		}
 	#endif
-	return (ZKMux)ntvMux;
+	return (zk_mux_t)ntv_mux;
 }
 
-static inline void ZKMux_Lock(ZKMux mux) {
+static inline void zk_mux_lock(zk_mux_t mux) {
 	#if defined(_WIN32)
 		WaitForSingleObject((HANDLE)mux, INFINITE);
 	#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
@@ -39,7 +39,7 @@ static inline void ZKMux_Lock(ZKMux mux) {
 	#endif
 }
 
-static inline void ZKMux_UnLock(ZKMux mux) {
+static inline void zk_mux_unlock(zk_mux_t mux) {
 	#if defined(_WIN32)
 		ReleaseMutex((HANDLE)mux);
 	#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
@@ -47,7 +47,7 @@ static inline void ZKMux_UnLock(ZKMux mux) {
 	#endif
 }
 
-static inline void ZKMux_Free(ZKMux mux) {
+static inline void zk_mux_free(zk_mux_t mux) {
 	#if defined(_WIN32)
 		CloseHandle((HANDLE)mux);
 	#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
