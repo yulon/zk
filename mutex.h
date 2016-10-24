@@ -22,8 +22,8 @@ static inline zk_mutex_t zk_new_mutex(void) {
 		}
 	#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 		pthread_mutex_t *ntv_mux = calloc(1, sizeof(pthread_mutex_t));
-		pthread_mutex_init(ntv_mux, NULL);
-		if (!ntv_mux) {
+		int result = pthread_mutex_init(ntv_mux, NULL);
+		if (result) {
 			puts("ZK.mutex: POSIX.pthread_mutex_init error!");
 			exit(1);
 		}
