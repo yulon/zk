@@ -21,7 +21,13 @@ typedef struct zk_map {
 	_zk_pair_list_t list;
 } *zk_map_t;
 
-static zk_map_t zk_new_map(size_t base_size) {
+#ifdef ZK_MAP_INLINE
+	#define _FN_ATTR static inline
+#else
+	#define _FN_ATTR static
+#endif
+
+_FN_ATTR zk_map_t zk_new_map(size_t base_size) {
 	zk_map_t map = (zk_map_t)calloc(1, sizeof(struct zk_map));
 	map->base = base_size;
 	map->size = base_size;
@@ -29,7 +35,7 @@ static zk_map_t zk_new_map(size_t base_size) {
 	return map;
 }
 
-static bool zk_map_resize(zk_map_t map, size_t size) {
+_FN_ATTR bool zk_map_resize(zk_map_t map, size_t size) {
 	if (size <= map->base) {
 		return false;
 	}
@@ -42,7 +48,7 @@ static bool zk_map_resize(zk_map_t map, size_t size) {
 	return true;
 }
 
-static bool _zk_map_set(zk_map_t map, void *key, void *value) {
+_FN_ATTR bool _zk_map_set(zk_map_t map, void *key, void *value) {
 	for (size_t dvdnd = map->base; dvdnd <= map->size; dvdnd += map->base) {
 		size_t ix = (size_t)key % dvdnd;
 		if (!map->list[ix].key) {
@@ -73,7 +79,7 @@ static bool _zk_map_set(zk_map_t map, void *key, void *value) {
 }
 #define zk_map_set(map, key, value) _zk_map_set(map, (void *)key, (void *)value)
 
-static void *_zk_map_get(zk_map_t map, void *key) {
+_FN_ATTR void *_zk_map_get(zk_map_t map, void *key) {
 	for (size_t dvdnd = map->base; dvdnd <= map->size; dvdnd += map->base) {
 		size_t ix = (size_t)key % dvdnd;
 		if (map->list[ix].key == key) {
@@ -84,7 +90,7 @@ static void *_zk_map_get(zk_map_t map, void *key) {
 }
 #define zk_map_get(map, key) _zk_map_get(map, (void *)key)
 
-static void _zk_map_delete(zk_map_t map, void *key) {
+_FN_ATTR void _zk_map_delete(zk_map_t map, void *key) {
 	for (size_t dvdnd = map->base; dvdnd <= map->size; dvdnd += map->base) {
 		size_t ix = (size_t)key % dvdnd;
 		if (map->list[ix].key == key) {
@@ -95,10 +101,12 @@ static void _zk_map_delete(zk_map_t map, void *key) {
 }
 #define zk_map_delete(map, key) _zk_map_delete(map, (void *)key)
 
-static void zk_map_free(zk_map_t map) {
+_FN_ATTR void zk_map_free(zk_map_t map) {
 	free(map->list);
 	free(map);
 }
+
+#undef _FN_ATTR
 
 #ifdef __cplusplus
 }
