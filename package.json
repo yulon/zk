@@ -1,10 +1,11 @@
 {
 	"name": "zk",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"repo": "yulon/zk",
 	"description": "A single-file libraries",
 	"license": "MIT",
 	"src": [
+		"clofn.h",
 		"map.h",
 		"mutex.h",
 		"rwlock.h",
