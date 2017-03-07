@@ -1,30 +1,35 @@
 #ifndef _ZK_MUTEX_H
 #define _ZK_MUTEX_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct zk_mutex *zk_mutex_t;
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #if defined(_WIN32)
 	#include <windows.h>
 #elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 	#include <pthread.h>
 #else
-	#pragma message("ZK.mutex: not support this OS!")
+	#pragma message("ZK.Mutex: not support this OS!")
 #endif
 
 static inline zk_mutex_t zk_new_mutex(void) {
 	#if defined(_WIN32)
 		HANDLE ntv_mux = CreateMutexW(NULL, FALSE, NULL);
 		if (!ntv_mux) {
-			puts("ZK.mutex: Win32.CreateMutexW error!");
+			puts("ZK.Mutex: Win32.CreateMutexW error!");
 			exit(1);
 		}
 	#elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 		pthread_mutex_t *ntv_mux = calloc(1, sizeof(pthread_mutex_t));
 		int result = pthread_mutex_init(ntv_mux, NULL);
 		if (result) {
-			puts("ZK.mutex: POSIX.pthread_mutex_init error!");
+			puts("ZK.Mutex: POSIX.pthread_mutex_init error!");
 			exit(1);
 		}
 	#endif
@@ -55,5 +60,9 @@ static inline void zk_mutex_free(zk_mutex_t mux) {
 		free(mux);
 	#endif
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !_ZK_MUTEX_H

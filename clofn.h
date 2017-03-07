@@ -27,7 +27,7 @@ extern "C" {
 		return VirtualProtect(ptr, size, PAGE_EXECUTE_READWRITE, &oldProtect);
 	}
 #else
-	#error ZK.clofn: not support this OS!
+	#error ZK.Clofn: not support this OS!
 #endif
 
 #define zk_clofn_def(ret_type, name, closure_type, closure_name, args, code) \
@@ -39,7 +39,7 @@ extern "C" {
 
 static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
 	#ifdef ZK_CLOFN_PRINT_HEADER
-		printf("ZK.clofn: raw header (%08X) { ", rawFunc);
+		printf("ZK.Clofn: raw header (%08X) { ", rawFunc);
 	#endif
 	for (size_t offset = *off; offset < ZK_CLOFN_ADDRESSING_RANGE; offset++) {
 		if (*(size_t *)((uintptr_t)rawFunc + offset) == (size_t)_ZK_CLOFN_NUM) {
@@ -56,12 +56,12 @@ static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
 			#elif defined(i386) || defined(__i386__) || defined(_X86_) || defined(__i386) || defined(__i686__) || defined(__i686) || defined(_WIN32)
 				size_t bxFuncSize = offset + sizeof(void *) * 2 + 1;
 			#else
-				#error ZK.clofn: not support this arch!
+				#error ZK.Clofn: not support this arch!
 			#endif
 
 			void *bxFunc = malloc(bxFuncSize);
 			if (!_zk_clofn_active_memory(bxFunc, bxFuncSize)) {
-				puts("ZK.clofn: could't change memory type of C.malloc allocated!");
+				puts("ZK.Clofn: could't change memory type of C.malloc allocated!");
 				free(bxFunc);
 				return NULL;
 			}
@@ -87,7 +87,7 @@ static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
 			#endif
 
 			#ifdef ZK_CLOFN_PRINT_HEADER
-				printf("ZK.clofn: new header (%08X) { ", bxFunc);
+				printf("ZK.Clofn: new header (%08X) { ", bxFunc);
 				for (size_t i = 0; i < bxFuncSize; i++) {
 					printf("%02X ", *(uint8_t *)(bxFunc + i));
 				}
@@ -104,7 +104,7 @@ static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
 		printf("...\n");
 	#endif
 
-	printf("ZK.clofn: could't find declarations at raw function (%08X)!\n", rawFunc);
+	printf("ZK.Clofn: could't find declarations at raw function (%08X)!\n", rawFunc);
 	return NULL;
 }
 

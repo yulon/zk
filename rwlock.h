@@ -1,9 +1,14 @@
 #ifndef _ZK_RWLOCK_H
 #define _ZK_RWLOCK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct zk_rwlock *zk_rwlock_t;
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #if defined(_WIN32)
@@ -30,13 +35,13 @@ typedef struct zk_rwlock *zk_rwlock_t;
 #elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 	#include <pthread.h>
 #else
-	#pragma message("ZK.rwlock: not support this OS!")
+	#pragma message("ZK.Rwlock: not support this OS!")
 #endif
 
 static inline zk_rwlock_t zk_new_rwlock(void) {
 	#if defined(_WIN32)
 
-		zk_rwlock_t lock = calloc(1, sizeof(struct zk_rwlock));
+		zk_rwlock_t lock = (zk_rwlock_t)calloc(1, sizeof(struct zk_rwlock));
 
 		if (_zk_rwlock_prototype.ReleaseSRWLockShared == NULL) {
 			HMODULE k32 = LoadLibraryW(L"kernel32");
@@ -74,7 +79,7 @@ static inline zk_rwlock_t zk_new_rwlock(void) {
 		pthread_rwlock_t *ntv_lock = calloc(1, sizeof(pthread_rwlock_t));
 		int result = pthread_rwlock_init(ntv_lock, NULL);
 		if (result) {
-			puts("ZK.rwlock: POSIX.pthread_rwlock_init error!");
+			puts("ZK.Rwlock: POSIX.pthread_rwlock_init error!");
 			exit(1);
 		}
 		return (zk_rwlock_t)ntv_lock;
@@ -140,5 +145,9 @@ static inline void zk_rwlock_free(zk_rwlock_t lock) {
 		free(lock);
 	#endif
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !_ZK_RWLOCK_H

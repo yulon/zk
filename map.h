@@ -1,6 +1,10 @@
 #ifndef _ZK_MAP_H
 #define _ZK_MAP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -18,10 +22,10 @@ typedef struct zk_map {
 } *zk_map_t;
 
 static zk_map_t zk_new_map(size_t base_size) {
-	zk_map_t map = calloc(1, sizeof(struct zk_map));
+	zk_map_t map = (zk_map_t)calloc(1, sizeof(struct zk_map));
 	map->base = base_size;
 	map->size = base_size;
-	map->list = calloc(base_size, sizeof(struct _zk_pair));
+	map->list = (_zk_pair_list_t)calloc(base_size, sizeof(struct _zk_pair));
 	return map;
 }
 
@@ -29,7 +33,7 @@ static bool zk_map_resize(zk_map_t map, size_t size) {
 	if (size <= map->base) {
 		return false;
 	}
-	_zk_pair_list_t newList = calloc(size, sizeof(struct _zk_pair));
+	_zk_pair_list_t newList = (_zk_pair_list_t)calloc(size, sizeof(struct _zk_pair));
 	_zk_pair_list_t oldList = map->list;
 	memcpy(newList, oldList, map->size);
 	map->list = newList;
@@ -95,5 +99,9 @@ static void zk_map_free(zk_map_t map) {
 	free(map->list);
 	free(map);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !_ZK_MAP_H
