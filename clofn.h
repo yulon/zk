@@ -14,7 +14,7 @@ extern "C" {
 #define ZK_CLOFN_ADDRESSING_RANGE 1024
 #define _ZK_CLOFN_NUM 0x58ffffbffdffffafULL
 
-#if defined(__unix__)
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 	#include <sys/mman.h>
 	#include <sys/user.h>
 	static inline bool _zk_clofn_active_memory(void *ptr, size_t size) {
@@ -37,12 +37,12 @@ extern "C" {
 	} \
 	static size_t _zk_clofn_##name##_offset = 0;
 
-static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
+static void *_zk_clofn_mkptr(void *prototype, size_t *off, void *data) {
 	#ifdef ZK_CLOFN_PRINT_HEADER
-		printf("ZK.Clofn: raw header (%08X) { ", rawFunc);
+		printf("ZK.Clofn: prototype header (%08X) { ", prototype);
 	#endif
 	for (size_t offset = *off; offset < ZK_CLOFN_ADDRESSING_RANGE; offset++) {
-		if (*(size_t *)((uintptr_t)rawFunc + offset) == (size_t)_ZK_CLOFN_NUM) {
+		if (*(size_t *)((uintptr_t)prototype + offset) == (size_t)_ZK_CLOFN_NUM) {
 			if (!*off) {
 				*off = offset;
 			}
@@ -52,21 +52,21 @@ static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
 			#endif
 
 			#if defined(__x86_64__) || defined(__x86_64) || defined(__amd64) || defined(__amd64__) || defined(_WIN64)
-				size_t bxFuncSize = offset + sizeof(void *) * 2 + 5;
+				size_t instanceSize = offset + sizeof(void *) * 2 + 5;
 			#elif defined(i386) || defined(__i386__) || defined(_X86_) || defined(__i386) || defined(__i686__) || defined(__i686) || defined(_WIN32)
-				size_t bxFuncSize = offset + sizeof(void *) * 2 + 1;
+				size_t instanceSize = offset + sizeof(void *) * 2 + 1;
 			#else
 				#error ZK.Clofn: not support this arch!
 			#endif
 
-			void *bxFunc = malloc(bxFuncSize);
-			if (!_zk_clofn_active_memory(bxFunc, bxFuncSize)) {
+			void *instance = malloc(instanceSize);
+			if (!_zk_clofn_active_memory(instance, instanceSize)) {
 				puts("ZK.Clofn: could't change memory type of C.malloc allocated!");
-				free(bxFunc);
+				free(instance);
 				return NULL;
 			}
-			memcpy(bxFunc, rawFunc, offset);
-			uintptr_t addr = (uintptr_t)bxFunc + offset;
+			memcpy(instance, prototype, offset);
+			uintptr_t addr = (uintptr_t)instance + offset;
 			*(void **)addr = data;
 			addr += sizeof(void *);
 
@@ -77,34 +77,34 @@ static void *_zk_clofn_mkptr(void *rawFunc, size_t *off, void *data) {
 				addr++;
 				*(uint8_t *)addr = 0xB8;
 				addr++;
-				*(uintptr_t *)addr = (uintptr_t)rawFunc + offset + sizeof(uintptr_t) - 1; // 0x58 in _ZK_CLOFN_NUM
+				*(uintptr_t *)addr = (uintptr_t)prototype + offset + sizeof(uintptr_t) - 1; // 0x58 in _ZK_CLOFN_NUM
 				addr += sizeof(uintptr_t);
 				*(uint16_t *)addr = 0xE0FF;
 			#elif defined(i386) || defined(__i386__) || defined(_X86_) || defined(__i386) || defined(__i686__) || defined(__i686) || defined(_WIN32)
 				*(uint8_t *)addr = 0xE9;
 				addr++;
-				*(uintptr_t *)addr = ((uintptr_t)rawFunc + offset + sizeof(uintptr_t)) - ((uintptr_t)bxFunc + bxFuncSize);
+				*(uintptr_t *)addr = ((uintptr_t)prototype + offset + sizeof(uintptr_t)) - ((uintptr_t)instance + instanceSize);
 			#endif
 
 			#ifdef ZK_CLOFN_PRINT_HEADER
-				printf("ZK.Clofn: new header (%08X) { ", bxFunc);
-				for (size_t i = 0; i < bxFuncSize; i++) {
-					printf("%02X ", *(uint8_t *)(bxFunc + i));
+				printf("ZK.Clofn: instance header (%08X) { ", instance);
+				for (size_t i = 0; i < instanceSize; i++) {
+					printf("%02X ", *(uint8_t *)(instance + i));
 				}
 				printf("}\n");
 			#endif
 
-			return bxFunc;
+			return instance;
 		}
 		#ifdef ZK_CLOFN_PRINT_HEADER
-			else printf("%02X ", *(uint8_t *)(rawFunc + offset));
+			else printf("%02X ", *(uint8_t *)(prototype + offset));
 		#endif
 	}
 	#ifdef ZK_CLOFN_PRINT_HEADER
 		printf("...\n");
 	#endif
 
-	printf("ZK.Clofn: could't find declarations at raw function (%08X)!\n", rawFunc);
+	printf("ZK.Clofn: could't find closure declaration at prototype function (%08X)!\n", prototype);
 	return NULL;
 }
 
