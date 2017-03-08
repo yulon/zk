@@ -108,7 +108,7 @@ static void *_zk_clofn_mkptr(void *prototype, size_t *off, void *data) {
 	return NULL;
 }
 
-#define zk_clofn_mkptr(name, closure_val) _zk_clofn_mkptr(_zk_clofn_##name, &_zk_clofn_##name##_offset, (void *)closure_val)
+#define zk_clofn_mkptr(name, closure_val) _zk_clofn_mkptr(_zk_clofn_prototype_##name, &_zk_clofn_prototype_##name##_offset, (void *)closure_val)
 
 #ifdef __cplusplus
 }
