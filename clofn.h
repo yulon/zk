@@ -31,11 +31,11 @@ extern "C" {
 #endif
 
 #define zk_clofn_def(ret_type, name, closure_type, closure_name, args, code) \
-	static ret_type _zk_clofn_##name args { \
+	static ret_type _zk_clofn_prototype_##name args { \
 		volatile closure_type closure_name = (closure_type)_ZK_CLOFN_NUM; \
 		code \
 	} \
-	static size_t _zk_clofn_##name##_offset = 0;
+	static size_t _zk_clofn_prototype_##name##_offset = 0;
 
 static void *_zk_clofn_mkptr(void *prototype, size_t *off, void *data) {
 	#ifdef ZK_CLOFN_PRINT_HEADER

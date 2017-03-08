@@ -1,6 +1,6 @@
 {
 	"name": "zk",
-	"version": "0.5.3",
+	"version": "0.5.4",
 	"repo": "yulon/zk",
 	"description": "A single-file libraries",
 	"license": "MIT",
